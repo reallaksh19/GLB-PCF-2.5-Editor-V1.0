@@ -13,9 +13,13 @@ import { domain as pipingDomain } from '../domains/piping/index.js';
 // ── Tab modules ───────────────────────────────────────────────────
 import { initViewerTab } from '../js/tabs/viewer-tab.js';
 import { initDebugTab }  from '../js/tabs/debug-tab.js';
+import { MasterDBStore } from '../js/data/masterdb-store.js';
 
 // Expose on window for Playwright tests and console access
 window.capabilities = capabilities;
+
+// Expose MasterDBStore instance globally for tests or runtime integration
+window.masterDBStore = new MasterDBStore();
 
 // ── Tab IDs must match id="rtab-{id}" / id="panel-{id}" in index.html ──
 const TABS = ['viewer', 'debug'];

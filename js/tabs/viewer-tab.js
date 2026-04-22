@@ -36,6 +36,7 @@
  */
 
 import { SceneRenderer } from '../renderer/scene-renderer.js';
+import { initToolbar } from '../ui/toolbar.js';
 
 let _sceneRenderer = null;
 
@@ -48,5 +49,9 @@ export function initViewerTab() {
   const container = document.getElementById('viewer-canvas');
   _sceneRenderer = container ? new SceneRenderer(container) : null;
   _exposeSceneRenderer(_sceneRenderer);
+
+  // Call initToolbar to wire up any ready buttons, e.g., the Master DB button
+  initToolbar(_sceneRenderer, () => [], null);
+
   console.warn('[viewer-tab] Not yet implemented. See wi/WI-viewer-tab.md');
 }

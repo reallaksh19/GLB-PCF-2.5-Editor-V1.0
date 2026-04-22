@@ -31,7 +31,16 @@
  *   ../../js/debug/logger.js       (appLogger)
  */
 
+import { openMasterDbPopup } from '../data/masterdb-popup.js';
+
 // TODO: implement — see wi/WI-toolbar.md
 export function initToolbar(_renderer, _getComponents, _getDomain) {
   console.warn('[toolbar] Not yet implemented. See wi/WI-toolbar.md');
+
+  const btnMasterDb = document.getElementById('btn-viewer-open-masterdb');
+  if (btnMasterDb && window.masterDBStore) {
+    btnMasterDb.addEventListener('click', () => {
+      openMasterDbPopup(window.masterDBStore);
+    });
+  }
 }
