@@ -213,3 +213,56 @@ Expose:
 - clear resolver API consumption points for AI-4
 - stable command payload format for AI-5 macro playback
 - debug traces for every HUD commit/cancel/error
+
+
+## 3A. Merge-governance rules you must follow
+
+### Contract dependency
+Do not implement final HUD behavior until these are frozen:
+- route command API
+- HUD contract/state schema
+- resolver query/response shape
+- debug trace schema for HUD events
+
+### Protected file handling
+You do not own shell or state-core protected files. Avoid edits to:
+- `js/tabs/viewer-tab.js`
+- `js/ui/toolbar.js`
+- `js/tabs/debug-tab.js`
+- `core/app.js`
+- `core/state.js`
+except through orchestrator-approved adapter points.
+
+### Dispatcher-only rule
+HUD must not directly:
+- create meshes,
+- mutate canonical model,
+- patch export state.
+
+HUD may only collect intent, request resolution, preview safely, and dispatch commands.
+
+## 6A. Critical markers for your branch
+
+Before handoff, verify:
+- last-length field reflects real previous committed segment length
+- Enter key commits through dispatcher
+- cancel/escape clears draft state cleanly
+- intelligent insert overlay shows source/provenance for resolved values
+- editable values remain user-overridable before commit
+- HUD debug trace remains visible in debug/logger surfaces
+- hidden/inactive HUD modes do not leak stub UI into active routes
+
+## 9A. Required evidence artifacts
+
+Attach:
+1. touched-file list
+2. HUD state contract revision used
+3. pass log for HUD scenarios
+4. smoke evidence for:
+   - line draw with typed length
+   - Enter-to-commit
+   - rise/drop assist
+   - valve insert overlay
+   - flange insert overlay
+   - cancel/error handling
+5. explicit statement that HUD does not directly mutate scene or canonical model

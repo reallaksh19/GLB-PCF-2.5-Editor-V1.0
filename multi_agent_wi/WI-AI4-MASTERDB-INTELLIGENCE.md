@@ -227,3 +227,48 @@ Expose:
 - stable `resolveComponent(query)` API for HUD and macro
 - stable import/export path for future `.pcfx`
 - debug payload for last match and match quality
+
+
+## 3A. Merge-governance rules you must follow
+
+### Contract dependency
+Do not finalize resolver behavior until the orchestrator freezes:
+- master DB record contract
+- resolver query shape
+- resolver response shape including provenance and alternatives
+- import/export schema version
+
+### Protected file handling
+You do not own shell protected files and must not edit them except through narrow integration adapters.
+Any UI surface you add for popup/grid must be capability-gated until functional.
+
+### No silent fallback rule
+Resolver may use fallback ranking, but every non-exact match must expose:
+- provenance/source,
+- warning flags,
+- alternatives,
+- reason for fallback when available.
+
+## 7A. Critical markers for your branch
+
+Before handoff, verify:
+- visible grid preserves required columns `Component, Size, Length, Weight`
+- normalized records retain richer match keys without corrupting visible rows
+- resolver exact match beats partial/fallback matches consistently
+- unresolved queries return explicit non-silent failure object
+- popup/grid route is not a stub in active UI
+- import/export roundtrip preserves values and units as designed
+
+## 9A. Required evidence artifacts
+
+Attach:
+1. touched-file list
+2. schema version used
+3. resolver/masterdb pass log
+4. smoke evidence for:
+   - manual grid edit
+   - popup open/edit/save
+   - exact resolver match
+   - fallback resolver match with warnings
+   - unresolved/manual case
+5. explicit statement that visible UI does not expose placeholder/stub data

@@ -214,3 +214,52 @@ You must expose:
 - deterministic command execution interface for macro
 - route metrics and normalized coordinates for debug and export
 - stable insertion hook for intelligent component placement
+
+
+## 3A. Merge-governance rules you must follow
+
+### Contract dependency
+Do not code beyond scaffolding until the orchestrator freezes:
+- command envelope,
+- command executor API,
+- history record schema,
+- route-model contract,
+- canonical model patch shape.
+
+Your branch must not invent alternate command or history shapes.
+
+### Protected file handling
+You do not own the shell files. Do not edit:
+- `js/tabs/viewer-tab.js`
+- `js/ui/toolbar.js`
+- `js/tabs/debug-tab.js`
+except through a narrow orchestrator-approved integration window.
+
+### Scene mutation prohibition
+You must not solve route authoring by mutating scene meshes directly.
+All geometry must regenerate from canonical route/model state through commands.
+
+## 6A. Critical markers for your branch
+
+Before handoff, verify:
+- every mutating route action goes through dispatcher/executor
+- history entries are emitted for every mutating route action
+- vertical rise/drop uses real `dz` semantics, not label-only tricks
+- route metrics reflect 3D distance, not plan-only distance
+- coordinate normalization keeps meshes, labels, and picking aligned
+- geometry regeneration can rebuild from canonical state after reload/replay
+
+## 9A. Required evidence artifacts
+
+Attach:
+1. touched-file list
+2. command contract revision used
+3. route-engine pass log
+4. smoke evidence for:
+   - route start
+   - horizontal segment add
+   - rise
+   - drop
+   - branch from vertical node
+   - replay from history
+5. explicit statement that no direct scene mutation path remains for route edits

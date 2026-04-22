@@ -220,3 +220,54 @@ You must expose stable hooks for:
 - AI-5 command history export visibility
 
 Do not hardcode future HUD or macro behavior here. Only provide clean hooks.
+
+
+## 3A. Merge-governance rules you must follow
+
+### Contract dependency
+Do not start deep implementation until the orchestrator freezes:
+- event names for viewer load / pick / selection / debug refresh,
+- app-shell integration hooks,
+- debug payload schema,
+- capability-gating flags.
+
+Your PR must declare the contract revision consumed.
+
+### Protected file ownership
+You are the primary owner for these high-conflict files during your wave:
+- `js/tabs/viewer-tab.js`
+- `js/ui/toolbar.js`
+- `js/tabs/debug-tab.js`
+
+No other agent may edit them without an orchestrator-approved ownership window.
+You must also avoid broad rewrites in `core/app.js`; ask the orchestrator for any required cross-cutting change.
+
+### No blanket conflict resolution
+If a conflict occurs in viewer/toolbar/debug files, you must perform a semantic/manual merge and document:
+- what behavior existed before,
+- what behavior is preserved,
+- what changed.
+
+## 7A. Critical markers for your branch
+
+Before you mark your branch ready, verify all of these remain true:
+- model load still emits `model-loaded`
+- toolbar buttons still invoke real handlers, not placeholders
+- pick/highlight still updates side panel
+- debug tab still renders active runtime data instead of stubs
+- status indicator transitions `active -> idle` correctly on success
+- capability gates do not expose dead UI paths
+
+## 9A. Required evidence artifacts
+
+Attach these to your handoff:
+1. touched-file list
+2. before/after behavior note for each owned file
+3. pass log for viewer-shell and debug tests
+4. smoke evidence for:
+   - PCF load
+   - DXF load
+   - toolbar interaction
+   - pick/highlight
+   - debug tab refresh
+5. explicit statement that no placeholder panels remain in active shell paths

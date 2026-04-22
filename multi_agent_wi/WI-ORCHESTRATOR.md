@@ -311,3 +311,125 @@ You must deliver:
 3. final known issues list,
 4. final acceptance checklist,
 5. recommended next-phase backlog.
+
+
+## 6A. Non-negotiable merge governance
+
+### Freeze contracts before parallel work
+You must not permit parallel feature development until these are tagged and published:
+- `editor/command-types.js`
+- `editor/command-handlers.js` public handler signatures
+- `editor/history.js` record schema
+- `editor/route-contract.js`
+- `hud/hud-contract.js`
+- `data/masterdb-contract.js`
+- `macro/macro-ir-contract.js`
+
+Every agent PR must state the exact contract revision it consumes.
+
+### Protected high-conflict files
+The following files are merge-sensitive and may only be edited in single-owner windows:
+- `js/tabs/viewer-tab.js`
+- `js/ui/toolbar.js`
+- `js/tabs/debug-tab.js`
+- `core/app.js`
+- `core/state.js`
+
+Rules:
+- no concurrent edits across agent branches unless the orchestrator explicitly opens a timed ownership window,
+- no blanket `git checkout --ours/--theirs` on these files,
+- all conflicts require semantic/manual reconciliation notes.
+
+### Integration branch and merge waves
+All merges must land first in `feat/orch-integration`, never directly in main.
+
+Required sequence:
+1. Wave 0 — contract freeze + state shell + debug schema
+2. Wave 1 — AI-1 shell/orchestration
+3. Wave 2 — AI-2 route engine + normalization
+4. Wave 3 — AI-3 HUD
+5. Wave 4 — AI-4 Master DB + resolver
+6. Wave 5 — AI-5 macro + export
+7. Wave 6 — hardening, regression, parity audit, release note
+
+You must stop the wave if a previous wave has unresolved behavior regressions.
+
+## 6B. Required CI gates
+
+### Compile gates
+- static import resolution: **100%**
+- test suite pass: **100%**
+- boot console errors: **0**
+- unhandled promise rejections: **0**
+
+### Behavior gates
+You must add scenario checks for at minimum:
+- viewer load and toolbar response
+- pick/highlight to side-panel update
+- route command dispatch updates canonical model
+- vertical rise/drop authoring produces correct 3D metrics
+- HUD last-length capture and Enter-to-commit
+- intelligent insert displays resolver provenance and editable values
+- macro dry-run then execute produces same command history shape as UI path
+- DXF/GLB export runs from canonical model with no uncaught error
+
+A PR that passes compile but fails any behavior gate is rejected.
+
+### Contract-violation checks
+You must add review and test guards for these anti-patterns:
+- UI directly mutating canonical model without dispatcher
+- HUD creating meshes directly
+- export reading transient scene state instead of canonical model
+- macro runtime bypassing command executor
+- resolver returning silent fallback without provenance/warning fields
+
+## 6C. Pre-merge evidence required from every agent
+
+Every merge request must include these artifacts:
+1. touched-file manifest
+2. list of protected files touched, if any
+3. pass/fail log excerpt
+4. smoke evidence screenshots or equivalent test output
+5. critical-marker checklist
+6. known limitation list
+7. contract revision consumed and emitted
+
+Reject the merge if any artifact is missing.
+
+## 6D. Critical-marker checklist before approval
+
+You must review these markers before each merge:
+- canonical model remains source of truth
+- command history records every mutating action
+- debug trace still renders command/result provenance
+- vertical route segments preserve `dz` semantics
+- HUD Enter key still commits through dispatcher
+- resolver result still includes `ok/source/matchKey/resolved/alternatives`
+- export path still consumes canonical state
+- no placeholder/stub panels remain in active UI routes
+
+## 6E. Final behavior parity audit before main
+
+Before merging `feat/orch-integration` into main, produce a parity audit matrix with columns:
+- feature area
+- expected behavior
+- runtime evidence
+- pass/fail
+- gap owner
+- disposition
+
+Minimum rows:
+- file import shell
+- scene pick/highlight
+- side-panel component details
+- debug tab visibility
+- route authoring
+- vertical rise/drop
+- HUD line mode
+- HUD intelligent insert
+- master DB popup and grid edit
+- resolver provenance and fallback
+- macro compile/dry-run/execute
+- export DXF/GLB from canonical model
+
+No open `fail` row may remain at merge time unless it is explicitly deferred in release notes and removed from active UI by capability gating.

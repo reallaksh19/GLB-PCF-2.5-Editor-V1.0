@@ -65,3 +65,64 @@ These are minimum cross-team targets unless a WI sets a stricter threshold.
 5. AI-4 adds Master DB and intelligent resolver
 6. AI-5 adds macro compiler/runtime and export hardening
 7. Orchestrator performs final integration, regression, and handoff
+
+
+## Mandatory merge-governance controls
+
+These controls are **required**, not optional. They were added to prevent behavioral regressions during multi-agent integration.
+
+1. **Freeze contracts first, then parallelize**
+   - Before any agent writes feature code, the orchestrator must freeze and publish the command, history, routing, HUD, resolver, and macro IR contracts.
+   - No branch may silently invent alternate command envelopes, history record shapes, or direct scene mutation paths.
+
+2. **Enforce single-owner windows for high-conflict files**
+   - In this repo the protected high-conflict files are:
+     - `js/tabs/viewer-tab.js`
+     - `js/ui/toolbar.js`
+     - `js/tabs/debug-tab.js`
+     - `core/app.js`
+     - `core/state.js`
+   - Only the assigned owner may edit these during an implementation wave.
+   - Any required cross-cutting change must be requested through the orchestrator and landed in a short ownership window.
+
+3. **Never resolve protected-file conflicts with blanket `--ours` / `--theirs`**
+   - Protected files require semantic/manual merge.
+   - Merge notes must explicitly state what behavior was preserved and what changed.
+
+4. **Merge in strict waves on an integration branch**
+   - Wave 0: contracts + state slices + debug schema
+   - Wave 1: shell/orchestration
+   - Wave 2: route engine + coordinate normalization
+   - Wave 3: HUD
+   - Wave 4: Master DB + resolver
+   - Wave 5: macro + export
+   - Wave 6: hardening + parity audit + release pack
+
+5. **Add behavior gates, not only compile gates**
+   - CI must run scenario checks for the user-visible behavior introduced by each wave.
+   - A branch that compiles but loses a core interaction is not mergeable.
+
+6. **Add contract-violation checks**
+   - CI and code review must fail if UI or macro code bypasses the command dispatcher and mutates canonical document/model state directly.
+   - HUD and toolbar code may collect intent, but must dispatch commands instead of editing meshes or raw scene objects.
+
+7. **Protect against silent feature regressions**
+   - Each PR must include a checklist of critical markers relevant to that branch.
+   - Example markers in this repo: route command dispatch path, vertical segment support, HUD Enter-to-commit, resolver provenance display, debug trace visibility, export path sourced from canonical model.
+
+8. **Keep stubs out of routed surfaces**
+   - No placeholder panels, stub overlays, or inactive menu routes may be left wired into active UI flows at merge time.
+   - If a surface is not ready, it must be hidden behind capability gating rather than exposed as a dead control.
+
+9. **Require per-branch evidence artifacts**
+   - Every agent branch must attach:
+     - touched-file list,
+     - pass/fail log,
+     - smoke evidence,
+     - known gaps,
+     - contract version consumed,
+     - screenshots or equivalent UI evidence for visible behavior.
+
+10. **Run one final behavior parity audit before main**
+   - The orchestrator must compare the expected feature matrix versus actual runtime behavior.
+   - Merge approval is based on runtime parity, not only changed lines or passing unit tests.

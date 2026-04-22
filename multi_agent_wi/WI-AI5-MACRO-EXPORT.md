@@ -234,3 +234,49 @@ Provide:
 - supported statements list
 - known unsupported edge cases
 - final export compatibility notes
+
+
+## 3A. Merge-governance rules you must follow
+
+### Contract dependency
+Do not finalize macro runtime until the orchestrator freezes:
+- command IR contract
+- executor API
+- export input contract from canonical model
+- macro debug trace schema
+
+### Protected file handling
+You do not own shell or protected core files.
+Keep edits outside your owned macro/export modules unless an orchestrator-approved bridge is required.
+
+### No bypass rule
+Macros must not:
+- manipulate scene/DOM directly,
+- mutate canonical state directly,
+- call export from transient scene state.
+
+All macro actions compile to IR and execute through the same dispatcher/executor path as interactive edits.
+
+## 7A. Critical markers for your branch
+
+Before handoff, verify:
+- macro compile output matches frozen IR contract
+- dry-run detects invalid syntax/commands without mutating state
+- execute path produces normal history records
+- coordinate-to-pipe macros create canonical routes, not only visuals
+- export reads canonical model after macro execution
+- macro editor surface is gated off if not fully ready
+
+## 9A. Required evidence artifacts
+
+Attach:
+1. touched-file list
+2. macro IR contract revision used
+3. pass log for macro/export tests
+4. smoke evidence for:
+   - parse/compile simple macro
+   - dry-run invalid macro
+   - execute route-building macro
+   - insert valve/flange macro
+   - export after macro execution
+5. explicit statement that macro runtime does not bypass dispatcher or export canonical-state contract
