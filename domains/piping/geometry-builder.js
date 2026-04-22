@@ -1,4 +1,5 @@
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { routeModelToComponents } from '../../js/editor/route-engine.js';
 import {
   buildPipeDraft, buildBendDraft, buildTeeDraft,
   buildFlangeDraft, buildValveDraft, buildGenericDraft
@@ -66,4 +67,13 @@ export function buildLabel(comp) {
     default:
       return null;
   }
+}
+
+export function rebuildDraftingModel(editorState, domain) {
+  const derivedComponents = routeModelToComponents(editorState.model.routes);
+  return domain.buildGeometry(derivedComponents, {
+    labels: true,
+    symbols: true,
+    source: 'route-engine',
+  });
 }

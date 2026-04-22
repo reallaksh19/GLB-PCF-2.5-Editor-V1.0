@@ -14,4 +14,6 @@ export const state = {
     /** Whether support/restraint name labels are shown */
     showRestraintNames: true,
   },
+  model: { routes: [] },
+  history: { past: [], future: [] },
 };
