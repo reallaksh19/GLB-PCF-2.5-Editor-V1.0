@@ -13,6 +13,7 @@ import { domain as pipingDomain } from '../domains/piping/index.js';
 // ── Tab modules ───────────────────────────────────────────────────
 import { initViewerTab } from '../js/tabs/viewer-tab.js';
 import { initDebugTab }  from '../js/tabs/debug-tab.js';
+import { openMasterDbPopup } from '../data/masterdb-popup.js';
 
 // Expose on window for Playwright tests and console access
 window.capabilities = capabilities;
@@ -80,6 +81,18 @@ async function boot() {
     // 4. Initialise tabs
     initViewerTab();
     initDebugTab();
+
+    // 5. Capability-gated Master DB popup button (added if not in active UI)
+    if (capabilities.getStatus && capabilities.getStatus('intelligence') === 'ready' || window.capabilities) {
+        const btn = document.createElement('button');
+        btn.textContent = 'Open Master DB';
+        btn.style.position = 'fixed';
+        btn.style.bottom = '10px';
+        btn.style.right = '10px';
+        btn.style.zIndex = '9998';
+        btn.addEventListener('click', openMasterDbPopup);
+        document.body.appendChild(btn);
+    }
 
     appLogger.info('APP_BOOT_COMPLETE');
     console.info('[GLB-PCF-Editor] Boot complete.');
