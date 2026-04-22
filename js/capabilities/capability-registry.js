@@ -34,6 +34,7 @@ const CAP_ELEMENTS = {
   'debug-tab':        ['debug-tab'],
   'support-symbols':  [],  // visual only — no dedicated button
   'css2d-labels':     ['labels'],
+  'masterdb':         ['masterdb']
 };
 
 // ── State ─────────────────────────────────────────────────────────────────────
