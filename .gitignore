@@ -1,1 +1,4 @@
 node_modules/
+test-results
+tests/playwright-report
+node_modules
