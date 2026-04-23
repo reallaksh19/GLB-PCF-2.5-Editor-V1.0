@@ -249,13 +249,14 @@ export class SceneRenderer {
 
   async exportGLB() {
     try {
-      const blob = await exportSceneToGLB(this._scene);
+      const blob = await import('../glb/exportSceneToGLB.js').then(m => m.exportSceneToGLB(this._scene));
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'scene.glb';
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); URL.revokeObjectURL(url); }, 100);
     } catch (err) {
       appLogger.error('GLB_EXPORT_FAIL', { message: err.message });
     }
@@ -332,7 +333,11 @@ async function _selfCheck() {
 
 if (typeof window !== 'undefined' && window.__GLB_PCF_DEV__) {
   _selfCheck().then(({ pass, failures }) => {
-    if (pass) capabilities.ready('scene-renderer');
+    if (pass) {
+      capabilities.ready('scene-renderer');
+      capabilities.ready('glb-export');
+      capabilities.ready('glb-load');
+    }
     else       capabilities.fail('scene-renderer', failures);
   });
 }
