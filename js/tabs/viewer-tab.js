@@ -36,6 +36,7 @@
  */
 
 import { SceneRenderer } from '../renderer/scene-renderer.js';
+import { initHudOrchestrator } from '../../hud/hud-orchestrator.js';
 
 let _sceneRenderer = null;
 
@@ -48,5 +49,20 @@ export function initViewerTab() {
   const container = document.getElementById('viewer-canvas');
   _sceneRenderer = container ? new SceneRenderer(container) : null;
   _exposeSceneRenderer(_sceneRenderer);
+
+  if (container) {
+    // Basic editor context placeholder. Wait for Orchestrator/AI-1 definition.
+    const executedCommands = [];
+    if (typeof window !== 'undefined') window.__HUD_MOCK_COMMANDS = executedCommands;
+    const editor = {
+      executeCommand: (cmd) => {
+        executedCommands.push(cmd);
+        return cmd;
+      }
+    };
+    if (typeof window !== 'undefined') window.__HUD_ORCHESTRATOR = initHudOrchestrator(editor, container);
+    else initHudOrchestrator(editor, container);
+  }
+
   console.warn('[viewer-tab] Not yet implemented. See wi/WI-viewer-tab.md');
 }
