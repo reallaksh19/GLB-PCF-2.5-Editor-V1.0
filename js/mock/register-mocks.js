@@ -38,7 +38,12 @@ async function _parseMockPcf() {
 /** Load mock DXF via the piping domain.parse() and return GenericComponent[] */
 async function _parseMockDxf() {
   const { domain } = await import('../../domains/piping/index.js');
-  return domain.parse(MOCK_DXF_TEXT, 'mock.dxf', _silentLog);
+  try {
+    return domain.parse(MOCK_DXF_TEXT, 'mock.dxf', _silentLog);
+  } catch (err) {
+    console.error("MOCK_DXF_PARSE_ERROR", err);
+    throw err;
+  }
 }
 
 /** Count components by type */
@@ -53,6 +58,7 @@ function _renderer() { return window._sceneRenderer || null; }
 
 /** Load mock into the 3D scene (parse + loadComponents). Returns components. */
 async function _loadMockIntoScene() {
+  try {
   const { domain } = await import('../../domains/piping/index.js');
   const components = await _parseMockPcf();
   const r = _renderer();
@@ -60,6 +66,10 @@ async function _loadMockIntoScene() {
     r.loadComponents(components, domain);
   }
   return components;
+} catch (e) {
+  console.error("MOCK_LOAD_SCENE_ERR", e);
+  throw e;
+}
 }
 
 /** Count meshes in the renderer's meshGroup */
@@ -317,7 +327,7 @@ capabilities.registerMock('support-symbols', async () => {
 
 // ─── CAPABILITY: glb-export ───────────────────────────────────────────────────
 capabilities.registerMock('glb-export', async () => {
-  const components = await _loadMockIntoScene();
+  let components; try { components = await _loadMockIntoScene(); } catch (e) { return runAssertions([{label: 'glb-export-error', expected: true, actual: false}]); }
   const r          = _renderer();
   const meshCount  = _meshCount();
 
@@ -325,8 +335,7 @@ capabilities.registerMock('glb-export', async () => {
   let exportOk = false;
   try {
     if (r && typeof r.exportGLB === 'function') {
-      await r.exportGLB();   // triggers browser download
-      exportOk = true;
+      try { await r.exportGLB(); exportOk = true; } catch (e) { console.error('GLB_EXPORT_MOCK_ERR', e); }
     }
   } catch (e) {
     exportOk = false;
@@ -354,6 +363,7 @@ capabilities.registerMock('glb-load', async () => {
 });
 
 // ─── CAPABILITY: dxf-import ───────────────────────────────────────────────────
+console.log("Registering mock: ", 'dxf-import');
 capabilities.registerMock('dxf-import', async () => {
   const components = await _parseMockDxf();
   const byType     = _byType(components);
