@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import {
   buildPipeDraft, buildBendDraft, buildTeeDraft,
@@ -66,4 +67,19 @@ export function buildLabel(comp) {
     default:
       return null;
   }
+}
+
+export function buildGeometry(components, options = { labels: true, symbols: true, source: 'route-engine' }) {
+  const group = new THREE.Group();
+  components.forEach(comp => {
+    const mesh = buildMesh(comp, options.theme || 'DrawLight');
+    if (mesh) group.add(mesh);
+
+    if (options.labels) {
+      const label = buildLabel(comp);
+      if (label) group.add(label);
+    }
+    // we would add symbols here based on the symbols options
+  });
+  return group;
 }

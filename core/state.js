@@ -4,6 +4,9 @@
  * Replace with a full Zustand store in Release 2.
  */
 export const state = {
+  model: {
+    routes: []
+  },
   viewerSettings: {
     /** Coordinate convention used by toThree() in pipe-geometry.js */
     axisConvention: 'Z-up',

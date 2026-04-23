@@ -8,6 +8,7 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { Line2 }        from 'three/addons/lines/Line2.js';
 import { state } from '../core/state.js';
+import { toThree as normalizerToThree, SCALE as normalizerScale } from '../editor/coordinate-normalizer.js';
 
 /** Colour palette by OD (mm) - matches legend */
 export const OD_COLORS = [
@@ -196,12 +197,8 @@ export function createBendArc(startPt, midPt, endPt, color, lineWidth = 3, rende
  * Viewer axes (requested): X = North, Y = Up, Z = East.
  * So: threeX = caesarY, threeY = caesarZ, threeZ = caesarX
  */
-export const SCALE = 1 / 1000;
+export const SCALE = normalizerScale;
 
 export function toThree(pos) {
-  return new THREE.Vector3(
-    pos.y * SCALE,
-    pos.z * SCALE,
-    pos.x * SCALE
-  );
+  return normalizerToThree(pos);
 }

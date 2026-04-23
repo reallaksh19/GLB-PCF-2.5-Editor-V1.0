@@ -1,1 +1,5 @@
 node_modules/
+serve.log
+test-results/
+tests/playwright-report/
+tests/snapshots/
