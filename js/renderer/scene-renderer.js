@@ -62,6 +62,7 @@ export class SceneRenderer {
     this._highlightedOriginalColor = null;
     this._theme = 'NavisDark';
     this._animId = null;
+    this._raycaster = new THREE.Raycaster();
 
     // Initial resize
     this.onResize();
@@ -124,7 +125,7 @@ export class SceneRenderer {
   }
 
   clear() {
-    [this._meshGroup, this._labelGroup, this._symbolGroup].forEach(group => {
+    [this._meshGroup, this._symbolGroup].forEach(group => {
       while (group.children.length > 0) {
         const child = group.children[0];
         group.remove(child);
@@ -137,6 +138,13 @@ export class SceneRenderer {
         }
       }
     });
+    while (this._labelGroup.children.length > 0) {
+      const child = this._labelGroup.children[0];
+      if (child.element && child.element.parentNode) {
+        child.element.parentNode.removeChild(child.element);
+      }
+      this._labelGroup.remove(child);
+    }
     this._compIndex.clear();
     this._meshIndex.clear();
     this.highlight(null);
@@ -212,10 +220,9 @@ export class SceneRenderer {
   }
 
   pick(ndcX, ndcY) {
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera({ x: ndcX, y: ndcY }, this._camera);
+    this._raycaster.setFromCamera({ x: ndcX, y: ndcY }, this._camera);
 
-    const intersects = raycaster.intersectObjects([...this._meshGroup.children, ...this._symbolGroup.children], true);
+    const intersects = this._raycaster.intersectObjects([...this._meshGroup.children, ...this._symbolGroup.children], true);
     if (intersects.length > 0) {
       let node = intersects[0].object;
       while (node) {
