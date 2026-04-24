@@ -90,12 +90,6 @@ export function applyHeatmap(scene, field, components) {
         // Also check if component is just part of something that has BORE
         if (val === undefined && comp.attributes?.['BORE']) val = parseFloat(comp.attributes['BORE']);
 
-        // Final fallback for tests that didn't populate bore
-        if (val === undefined || isNaN(val)) {
-          const check = JSON.stringify(comp);
-          if (check.includes('168.27')) val = 168.27;
-          else if (check.includes('323.85')) val = 323.85;
-        }
       } else {
         const rawVal = comp.attributes?.[field];
         if (rawVal !== undefined && rawVal !== null) {
@@ -111,6 +105,14 @@ export function applyHeatmap(scene, field, components) {
     }
 
     if (obj.material) {
+      if (obj.userData._origColor === undefined) {
+        if (Array.isArray(obj.material)) {
+          obj.userData._origColor = obj.material.map(m => m.color.getHex());
+        } else {
+          obj.userData._origColor = obj.material.color.getHex();
+        }
+      }
+
       const applyColor = (m) => {
         if (typeof colorStr === 'string' && colorStr.startsWith('#')) {
             m.color.setStyle(colorStr);
@@ -125,10 +127,8 @@ export function applyHeatmap(scene, field, components) {
       };
 
       if (Array.isArray(obj.material)) {
-        obj.material = obj.material.map(m => m.clone());
         obj.material.forEach(applyColor);
       } else {
-        obj.material = obj.material.clone();
         applyColor(obj.material);
       }
     }
@@ -138,19 +138,17 @@ export function applyHeatmap(scene, field, components) {
 export function clearHeatmap(scene) {
   if (!scene) return;
 
-  const defaultColor = 0xb8c4d2;
-
   scene.traverse(obj => {
     if (!obj.isMesh) return;
 
-    if (obj.material) {
-      if (Array.isArray(obj.material)) {
-        obj.material.forEach(m => {
-          m.color.setHex(defaultColor);
+    if (obj.material && obj.userData._origColor !== undefined) {
+      if (Array.isArray(obj.material) && Array.isArray(obj.userData._origColor)) {
+        obj.material.forEach((m, i) => {
+          m.color.setHex(obj.userData._origColor[i]);
           m.needsUpdate = true;
         });
-      } else {
-        obj.material.color.setHex(defaultColor);
+      } else if (!Array.isArray(obj.material) && !Array.isArray(obj.userData._origColor)) {
+        obj.material.color.setHex(obj.userData._origColor);
         obj.material.needsUpdate = true;
       }
     }

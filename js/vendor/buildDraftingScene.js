@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { toThree } from '../../geometry/pipe-geometry.js';
 
 const COLORS = {
   NavisDark: { pipe: 0xb8c4d2, flange: 0x8899aa, valve: 0x6699aa, generic: 0x9aabb8 },
@@ -11,7 +12,7 @@ function themeColor(theme, key) {
 
 function toVec3(pt) {
   if (!pt) return new THREE.Vector3(0, 0, 0);
-  return new THREE.Vector3(pt.x, pt.y, pt.z);
+  return toThree(pt);
 }
 
 function minBore(bore) {
